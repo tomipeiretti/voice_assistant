@@ -1,13 +1,14 @@
 import psutil
+import datetime
 
 class SkillSystem:
     intents = [
         "cpu_usage",
         "memory_usage",
-        "disk_usage",
-        "disk_space"
         "battery_status",
         "temperature_status",
+        "uptime",
+        "list_disks",
     ]
 
     def __init__(self, say):
@@ -22,19 +23,6 @@ class SkillSystem:
         if intent == "memory_usage":
             mem = psutil.virtual_memory()
             self.say(f"El uso de memoria es de {mem.percent} por ciento")
-            return True
-
-        if intent == "disk_usage":
-            disk = psutil.disk_usage('/')
-            self.say(f"El uso de disco es de {disk.percent} por ciento")
-            return True
-
-        if intent == "disk_space":
-            disk = psutil.disk_usage('/')
-            total = round(disk.total / (1024 ** 3), 1)  # GB con 1 decimal
-            used = round(disk.used / (1024 ** 3), 1)
-            free = round(disk.free / (1024 ** 3), 1)
-            self.say(f"El disco tiene {total} gigas en total. Usaste {used} y te quedan {free} libres.")
             return True
 
         if intent == "battery_status":
@@ -69,6 +57,51 @@ class SkillSystem:
                 self.say(f"La temperatura de la GPU es {gpu_avg:.1f} grados")
             else:
                 self.say("No encontré sensores de GPU")
+            return True
+
+        if intent == "uptime":
+            boot_ts = psutil.boot_time()
+            boot_time = datetime.datetime.fromtimestamp(boot_ts)
+            time = datetime.datetime.now() - boot_time
+
+            hours, resto = divmod(time.total_seconds(), 3600)
+            minutes, _ = divmod(resto, 60)
+
+            hours = int(hours)
+            minutes = int(minutes)
+
+            if hours > 0:
+                self.say(f"La computadora está encendida hace {hours} horas y {minutes} minutos")
+            else:
+                self.say(f"La computadora está encendida hace {minutes} minutos")
+            return True
+
+        if intent == "list_disks":
+            try:
+                parts = psutil.disk_partitions(all=False)
+                if not parts:
+                    self.say("No encontré discos o particiones disponibles")
+                    return True
+                mensajes = []
+                for p in parts:
+                    try:
+                        uso = psutil.disk_usage(p.mountpoint)
+                        total = round(uso.total / (1024 ** 3), 1)
+                        usado = round(uso.used / (1024 ** 3), 1)
+                        libre = round(uso.free / (1024 ** 3), 1)
+                        mensajes.append(
+                            f"En {p.device} hay {total} gigas en total, usaste {usado} y quedan {libre} libres"
+                        )
+                    except PermissionError:
+                        # Algunas particiones del sistema no permiten consultar
+                        continue
+                if mensajes:
+                    for m in mensajes:
+                        self.say(m)
+                else:
+                    self.say("No pude obtener información de los discos")
+            except Exception:
+                self.say("Ocurrió un error al consultar los discos")
             return True
 
         return False

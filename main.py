@@ -6,6 +6,8 @@ from skills.skill_web import SkillWeb
 from skills.skill_fun import SkillFun
 from skills.skill_system import SkillSystem
 from skills.skill_process import SkillProcess
+from skills.skill_network import SkillNetwork
+from skills.skill_metrics_logger import SkillMetricsLogger
 
 class Router:
     def __init__(self, skills):
@@ -42,6 +44,8 @@ def main():
         SkillFun(say),
         SkillSystem(say),
         SkillProcess(say),
+        SkillNetwork(say),
+        SkillMetricsLogger(say),
     ]
     router = Router(skills)
 

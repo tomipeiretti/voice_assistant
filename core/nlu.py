@@ -29,6 +29,7 @@ _re_cpu_at_time = re.compile(r"\bcpu\b.*a\s+las\s+(\d{1,2}:\d{2})", re.I) # CPU 
 _re_mem_at_time = re.compile(r"\b(ram|memoria)\b.*a\s+las\s+(\d{1,2}:\d{2})", re.I) # RAM en un momento específico
 _re_note = re.compile(r"\b(crea?r?\s+nota|guardar?\s+nota|escribir?\s+nota)\b", re.I) #Crear notas
 _re_open_app = re.compile(r"\babrir\s+(.+)", re.I) #abrir apps conocidas
+_re_calc = re.compile(r"\b(calcula?|cuánto\s+es)\b", re.I)
 
 _re_bye = re.compile(r"\badiós\b|\bchau\b|\bhasta luego\b|\bsalir\b", re.I)
 
@@ -98,6 +99,9 @@ class SimpleNLU:
         if _re_open_app.search(t):
             app = _re_open_app.search(t).group(1).strip()
             return {"intent": "open_app", "entities": {"app": app}}
+        if _re_calc.search(t):
+            q = re.sub(_re_calc, "", t, count=1).strip()
+            return {"intent": "calculate", "entities": {"expr": q}}
 
         if _re_bye.search(t):
             return {"intent": "goodbye", "entities": {}}

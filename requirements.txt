@@ -5,3 +5,4 @@ pyjokes
 wikipedia
 pyaudio
 psutil
+python-dotenv

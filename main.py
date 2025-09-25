@@ -11,6 +11,7 @@ from skills.skill_network import SkillNetwork
 from skills.skill_metrics_logger import SkillMetricsLogger
 from skills.skill_notes import SkillNotes
 from skills.skill_apps import SkillApps
+from skills.skill_calc import SkillCalc
 
 # Saludo con contexto horario
 def saludo_inicial(say):
@@ -37,6 +38,7 @@ def main():
         SkillMetricsLogger(say),
         SkillNotes(say, asr),
         SkillApps(say),
+        SkillCalc(say),
     ]
     router = Router(skills)
 

@@ -6,7 +6,7 @@ class ASRGoogle:
         self.rec = sr.Recognizer()
         self.mic = sr.Microphone()
 
-    def listen(self, timeout: float = 5, phrase_time_limit: float = 7) -> str:
+    def listen(self, timeout: float = 20, phrase_time_limit: float = 20) -> str:
         #return "ip"
         with self.mic as source:
             # Ajuste de ruido ambiente breve

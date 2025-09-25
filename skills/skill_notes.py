@@ -17,7 +17,7 @@ class SkillNotes:
             if not content:
                 # No vino texto → pedimos interacción
                 self.say("¿Qué querés escribir en la nota?")
-                content = self.asr.listen(timeout=10, phrase_time_limit=15).strip()
+                content = self.asr.listen(timeout=10, phrase_time_limit=20).strip()
 
             if not content:
                 self.say("No entendí lo que dijiste, no pude crear la nota")

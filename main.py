@@ -2,26 +2,15 @@ import datetime
 from adapters.asr import ASRGoogle
 from adapters.tts import say
 from core.nlu import SimpleNLU
+from core.router import Router
 from skills.skill_web import SkillWeb
 from skills.skill_fun import SkillFun
 from skills.skill_system import SkillSystem
 from skills.skill_process import SkillProcess
 from skills.skill_network import SkillNetwork
 from skills.skill_metrics_logger import SkillMetricsLogger
-
-class Router:
-    def __init__(self, skills):
-        # Índice intent -> [skill]
-        self.registry = {}
-        for s in skills:
-            for i in getattr(s, 'intents', []):
-                self.registry.setdefault(i, []).append(s)
-
-    def route(self, intent: str, entities: dict) -> bool:
-        for s in self.registry.get(intent, []):
-            if s.handle(intent, entities):
-                return True
-        return False
+from skills.skill_notes import SkillNotes
+from skills.skill_apps import SkillApps
 
 # Saludo con contexto horario
 def saludo_inicial(say):
@@ -46,6 +35,8 @@ def main():
         SkillProcess(say),
         SkillNetwork(say),
         SkillMetricsLogger(say),
+        SkillNotes(say, asr),
+        SkillApps(say),
     ]
     router = Router(skills)
 

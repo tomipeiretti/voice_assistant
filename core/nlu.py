@@ -1,5 +1,5 @@
-# NLU simple por palabras clave/regex  NLU --> Natural Languaje Understanding
-import re
+# NLU por palabras clave/regex  NLU --> Natural Languaje Understanding
+import re #módulo de expresiones regulares de Python. Sirve para buscar patrones de texto en strings.
 from typing import Dict, Any
 
 # Patrones básicos
@@ -18,7 +18,7 @@ _re_top_mem = re.compile(r"\b(proceso|aplicaci[oó]n)\s+(que\s+m[aá]s\s+memoria
 _re_top_cpu = re.compile(r"\b(proceso|aplicaci[oó]n)\s+(que\s+m[aá]s\s+cpu|consumo\s+de\s+cpu)\b", re.I)
 _re_temp = re.compile(r"\btemperatura\b.*\b(cpu|gpu)\b|\btemperaturas?\b", re.I)
 _re_uptime = re.compile(r"\b(tiempo\s+de\s+(uso|encendida|encendido)|uptime|último\s+arranque)\b", re.I)
-_re_list_disks = re.compile(r"\b(discos?|particiones)\b(gigas?|gigabytes|espacio\s+libre|libres|almacenamiento|tamaño\s+del\s+disco)\buso\s+de\s+disco\b|\bdisco\b", re.I)
+_re_list_disks = re.compile(r"\b(discos|particiones)\b(gigas|gigabytes|espacio\s+libre|libres|almacenamiento|tamaño\s+del\s+disco)\buso\s+de\s+disco\b|\bdisco\b", re.I)
 _re_net_usage = re.compile(r"\b(consumo\s+de\s+red|datos\s+(enviados|recibidos)|uso\s+de\s+red)\b", re.I) # Consumo de red
 _re_net_if = re.compile(r"\b(interfaz|interfaces|ip|direcci[oó]n\s+ip)\b", re.I) # Interfaces e IP
 _re_mem_avg = re.compile(r"\b(promedio|media)\b.*\b(ram|memoria)\b.*(hora)", re.I) # Promedio RAM última hora
@@ -27,6 +27,8 @@ _re_cpu_peak = re.compile(r"\b(m[aá]ximo|mayor|pico)\b.*\bcpu\b.*(hoy|d[ií]a)"
 _re_mem_peak = re.compile(r"\b(m[aá]ximo|mayor|pico)\b.*\b(ram|memoria)\b.*(hoy|d[ií]a)", re.I) # Pico RAM del día
 _re_cpu_at_time = re.compile(r"\bcpu\b.*a\s+las\s+(\d{1,2}:\d{2})", re.I) # CPU en un momento específico
 _re_mem_at_time = re.compile(r"\b(ram|memoria)\b.*a\s+las\s+(\d{1,2}:\d{2})", re.I) # RAM en un momento específico
+_re_note = re.compile(r"\b(crea?r?\s+nota|guardar?\s+nota|escribir?\s+nota)\b", re.I) #Crear notas
+_re_open_app = re.compile(r"\babrir\s+(.+)", re.I) #abrir apps conocidas
 
 _re_bye = re.compile(r"\badiós\b|\bchau\b|\bhasta luego\b|\bsalir\b", re.I)
 
@@ -51,10 +53,6 @@ class SimpleNLU:
             return {"intent": "play_youtube", "entities": {"q": q}}
         if _re_joke.search(t):
             return {"intent": "tell_joke", "entities": {}}
-        if _re_cpu.search(t):
-            return {"intent": "cpu_usage", "entities": {}}
-        if _re_mem.search(t):
-            return {"intent": "memory_usage", "entities": {}}
         if _re_batt.search(t):
             return {"intent": "battery_status", "entities": {}}
         if _re_list_proc.search(t):
@@ -90,7 +88,19 @@ class SimpleNLU:
         m = _re_mem_at_time.search(t)
         if m:
             return {"intent": "mem_at_time", "entities": {"time": m.group(1)}}
+        if _re_cpu.search(t):
+            return {"intent": "cpu_usage", "entities": {}}
+        if _re_mem.search(t):
+            return {"intent": "memory_usage", "entities": {}}
+        if _re_note.search(t):
+            q = re.sub(_re_note, "", t, count=1).strip()
+            return {"intent": "create_note", "entities": {"content": q}}
+        if _re_open_app.search(t):
+            app = _re_open_app.search(t).group(1).strip()
+            return {"intent": "open_app", "entities": {"app": app}}
+
         if _re_bye.search(t):
             return {"intent": "goodbye", "entities": {}}
+
 
         return {"intent": "__fallback__", "entities": {"raw": t}}

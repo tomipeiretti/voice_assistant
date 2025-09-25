@@ -17,7 +17,10 @@ def es_app_valida(nombre: str) -> bool:
     return False
 
 class SkillProcess:
-    intents = ["list_processes", "kill_process", "top_memory_process", "top_cpu_process"]
+    intents = ["list_processes",
+               "kill_process",
+               "top_memory_process",
+               "top_cpu_process"]
 
     def __init__(self, say):
         self.say = say

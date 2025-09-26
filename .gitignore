@@ -1,6 +1,7 @@
 notas/
 metrics_log.csv
 .env
+.idea/
 
 # Archivos de Python
 __pycache__/

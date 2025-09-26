@@ -1,3 +1,22 @@
 notas/
 metrics_log.csv
 .env
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Configuración de IDE
+.idea/
+.vscode/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
